@@ -1,15 +1,16 @@
 package com.pagenavigatordemo.views;
 
+import com.pagenavigatordemo.views.ContentLayout.SideMenuProvider;
 import com.webforj.component.Composite;
 import com.webforj.component.html.elements.H3;
-import com.webforj.component.html.elements.H4;
+import com.webforj.component.html.elements.Span;
 import com.webforj.component.layout.flexlayout.FlexLayout;
 import com.webforj.router.annotation.FrameTitle;
 import com.webforj.router.annotation.Route;
 
 @Route(value = "/favorites", outlet = ContentLayout.class)
 @FrameTitle("Favorites")
-public class FavoritesView extends Composite<FlexLayout> implements TopRightHeadersProvider {
+public class FavoritesView extends Composite<FlexLayout> implements SideMenuProvider {
   private FlexLayout self = getBoundComponent();
 
   public FavoritesView() {
@@ -26,12 +27,12 @@ public class FavoritesView extends Composite<FlexLayout> implements TopRightHead
   }
 
   private void addSection(String title, String body) {
-    String slug = title.toLowerCase().replaceAll("[^a-z0-9]+", "-").replaceAll("(^-|-$)", "");
+
     H3 h = new H3(title);
-    h.setAttribute("id", slug);
+    h.setAttribute("id", com.pagenavigatordemo.views.ContentLayout.createSlug(title));
     self.add(h);
     for (int i = 0; i < 6; i++) {
-      self.add(new H4(body));
+      self.add(new Span(body));
     }
   }
 
@@ -40,7 +41,7 @@ public class FavoritesView extends Composite<FlexLayout> implements TopRightHead
   }
 
   @Override
-  public java.util.List<String> getTopRightHeaders() {
+  public java.util.List<String> getSideMenuItems() {
     return java.util.Arrays.asList("Section 1", "Section 2", "Section 3", "Section 4", "Section 5", "Section 6");
   }
 }

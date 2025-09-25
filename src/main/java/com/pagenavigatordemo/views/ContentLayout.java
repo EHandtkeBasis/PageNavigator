@@ -1,8 +1,10 @@
 package com.pagenavigatordemo.views;
 
 import com.webforj.component.Composite;
+import com.webforj.component.html.elements.Anchor;
 import com.webforj.component.html.elements.Div;
 import com.webforj.component.Component;
+import com.webforj.component.layout.flexlayout.FlexDirection;
 import com.webforj.component.layout.flexlayout.FlexLayout;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,19 +17,20 @@ public class ContentLayout extends Composite<Div> implements RouteOutlet {
 
   private final Div mainArea = new Div();
 
-  private final FlexLayout topRight = new FlexLayout();
-  private final List<Component> topRightChildren = new ArrayList<>();
+  private final FlexLayout sideMenu = new FlexLayout();
+  private final List<Component> sideMenuChildren = new ArrayList<>();
+
+  static public String createSlug(String text) {
+    return text.toLowerCase().replaceAll("[^a-z0-9]+", "-").replaceAll("(^-|-$)", "");
+  }
 
   public ContentLayout() {
-
     self.addClassName("container");
-
     mainArea.addClassName("content");
-
-    topRight.addClassName("side");
+    sideMenu.addClassName("side");
 
     self.add(mainArea);
-    self.add(topRight);
+    self.add(sideMenu);
   }
 
   public void add(Component c) {
@@ -38,37 +41,16 @@ public class ContentLayout extends Composite<Div> implements RouteOutlet {
     mainArea.remove(c);
   }
 
-  public void setTopRight(Component c) {
-    for (Component child : topRightChildren) {
-      topRight.remove(child);
-    }
-    topRightChildren.clear();
-
-    if (c != null) {
-      topRight.add(c);
-      topRightChildren.add(c);
-    }
-  }
-
-  public void clearTopRight() {
-    setTopRight(null);
-  }
-
-  private void clearMain() {
-    mainArea.removeAll();
-  }
-
   @Override
   public void showRouteContent(Component component) {
     clearMain();
     if (component != null)
       add(component);
-    if (component instanceof TopRightHeadersProvider) {
-        TopRightHeadersProvider p = (TopRightHeadersProvider) component;
-        HeadersList hl = new HeadersList();
-        hl.setHeaders(p.getTopRightHeaders());
-        setTopRight(hl);
-      }
+    if (component instanceof SideMenuProvider) {
+      SideMenuProvider p = (SideMenuProvider) component;
+      FlexLayout hl = setHeaders(p.getSideMenuItems());
+      setSideMenu(hl);
+    }
   }
 
   @Override
@@ -76,4 +58,38 @@ public class ContentLayout extends Composite<Div> implements RouteOutlet {
     if (component != null)
       remove(component);
   }
+
+  private void setSideMenu(Component c) {
+    for (Component child : sideMenuChildren) {
+      sideMenu.remove(child);
+    }
+    sideMenuChildren.clear();
+
+    if (c != null) {
+      sideMenu.add(c);
+      sideMenuChildren.add(c);
+    }
+  }
+
+  private void clearMain() {
+    mainArea.removeAll();
+  }
+
+  public interface SideMenuProvider {
+    List<String> getSideMenuItems();
+  }
+
+  private FlexLayout setHeaders(List<String> headers) {
+    FlexLayout list = new FlexLayout();
+    list.setDirection(FlexDirection.COLUMN);
+
+    for (String h : headers) {
+      Anchor a = new Anchor("#" + createSlug(h), h);
+      a.addClassName("top-right-item");
+      list.add(a);
+    }
+
+    return list;
+  }
+
 }
