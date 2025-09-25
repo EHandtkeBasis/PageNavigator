@@ -1,0 +1,29 @@
+.container {
+  display: flex;
+  width: 100%;
+  overflow: hidden;
+  height: 100%;
+  position: relative;
+}
+
+.side {
+  width: max-content;
+  min-width: fit-content;
+  background-color: var(--dwc-surface-3);
+  padding: 20px;
+  margin: 10px;
+  height: fit-content;
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+  flex-shrink: 0;
+  border: var(--dwc-border-width) var(--dwc-border-style) var(--dwc-color-default);
+}
+
+.content {
+  flex: 1 1 auto;
+  padding: 20px;
+  width: 100%;
+  min-height: 0;
+  overflow: auto;
+}
